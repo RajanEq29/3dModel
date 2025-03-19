@@ -1,131 +1,101 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { Suspense, useEffect, useState } from 'react';
+import { SafeAreaView, View, Text, Pressable, StyleSheet, DeviceEventEmitter, Alert } from 'react-native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+// Import components
+import Trigger from './src/components/Trigger';
+import Model, { ModelRender } from './src/components/Model';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const App = () => {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    // Listen for a custom event from a native module
+    const subscription = DeviceEventEmitter.addListener('CustomEvent', (eventData) => {
+      Alert.alert('Received Event', JSON.stringify(eventData));
+    });
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    return () => {
+      subscription.remove(); // Cleanup on unmount
+    };
+  }, []);
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+    <SafeAreaView style={styles.container}>
+      <Canvas>
+        <Suspense fallback={null}>
+          <ModelRender />
+          <OrbitControls />
+        </Suspense>
+      </Canvas>
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the reccomendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
-
-  return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
+      {/* Bottom Section */}
+      <View style={styles.bottomContainer}>
+        {/* Product Details */}
+        <View style={styles.textContainer}>
+          <Text style={styles.textTitle}>Grey Chair</Text>
+          <Text style={styles.textPrice}>$80.00</Text>
+          <Text style={styles.text}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin mattis maximus eros,
+            eu ullamcorper ante ullamcorper a. Phasellus turpis tellus, tempus at feugiat at, facilisis ac sem.
+          </Text>
         </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+        {/* Buy Button */}
+        <View style={styles.buttonContainer}>
+          <Pressable style={styles.button}>
+            <Text style={styles.textButton}>Buy Now</Text>
+          </Pressable>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default App;
+
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  bottomContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f8f8f8',
+  },
+  textContainer: {
+    marginBottom: 20,
+  },
+  textTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  textPrice: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#007BFF',
+    marginVertical: 5,
+  },
+  text: {
+    fontSize: 14,
+    color: '#555',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+  },
+  textButton: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
