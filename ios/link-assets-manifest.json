@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/modals/Model.glb",
+      "sha1": "b7afab539ea1a469bb83b344509d18bafafdf34e"
+    },
+    {
+      "path": "src/assets/modals/yellow.glb",
+      "sha1": "1e0cf61494f9d886b6c91c5ebcdd4b7f19fc4f14"
+    }
+  ]
+}
